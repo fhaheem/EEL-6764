@@ -14,6 +14,7 @@ LaTeX homework sources and project files for **Graduate Computer Architecture (E
 
 ---
 ## 📁 Repository Structure
+'''
 EEL-6764/
 ├── homeworks/          # Additional homework or supporting files
 ├── hw3_images/         # Figures and diagrams for Homework 3
@@ -25,6 +26,6 @@ EEL-6764/
 ├── preamble.tex        # LaTeX preamble with packages and styling
 ├── .gitignore          # Git ignore file for LaTeX build artifacts
 └── README.md           # Project documentation (this file)
-
+'''
 
 
