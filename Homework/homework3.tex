@@ -1,0 +1,529 @@
+\begin{enumerate}
+    \item \textbf{Data Hazards and Pipeline Timing - Solve Problem C.1 on pages C-71 and C-72.}
+    \begin{center}
+        \begin{lstlisting}[language=Assembler]
+            Loop:   ld      x1, 0(x2)      ; load x1 from address 0 + x2
+                    addi    x1, x1, 1      ; x1 = x1 + 1
+                    sd      x1, 0(x2)      ; store x1 at address 0 + x2
+                    addi    x2, x2, 4      ; x2 = x2 + 4
+                    sub     x4, x3, x2     ; x4 = x3 - x2
+                    bnez    x4, Loop       ; branch to Loop if x4 != 0
+        \end{lstlisting}
+        Assume that the initial value of \lstinline[language=Assembler] {x3} is \lstinline[language=Assembler]{x2+396}
+    \end{center}
+    
+    \begin{enumerate}
+        \item \textbf{Data hazards are caused by data dependencies in the code. Whether a dependency causes a hazard depends on the machine implementation (i.e., number of pipeline stages). List all of the data dependecies in the code above. Record the register, source instruction, and destination instruction; for example, there is a data dependency for register \lstinline[language=Assembler]{x1} from the \lstinline[language=Assembler]{ld} to the \lstinline[language=Assembler]{addi}.}
+        
+        \begin{center}
+            \begin{tabular}{ |c|c|c|c| }
+                \hline
+                \textbf{Register} & \textbf{Source Instruction} & \textbf{Destination Instruction} & \textbf{Explanation} \\
+                \hline
+                \lstinline[language=Assembler]|x1| & \lstinline[language=Assembler]|ld x1, 0(x2)| & \lstinline[language=Assembler]|addi x1, x1, 1| & \lstinline[language=Assembler]|addi| uses loaded value \\
+                \hline
+                \lstinline[language=Assembler]|x1| & \lstinline[language=Assembler]|addi x1, x1, 1| & \lstinline[language=Assembler]|sd x1, 0(x2)| & \lstinline[language=Assembler]|sd| stores updated value \\
+                \hline
+                \lstinline[language=Assembler]|x2| & \lstinline[language=Assembler]|addi x2, x2, 4| & \lstinline[language=Assembler]|sub x4, x3, x2| & \lstinline[language=Assembler]|sub| uses updated value \\
+                \hline
+                \lstinline[language=Assembler]|x4| & \lstinline[language=Assembler]|sub x4, x3, x2| & \lstinline[language=Assembler]|bnez x4, Loop| & \lstinline[language=Assembler]|bnez| uses result of \lstinline[language=Assembler]|sub| \\
+                \hline
+                \lstinline[language=Assembler]|x2| & \lstinline[language=Assembler]|addi x2, x2, 4| & \lstinline[language=Assembler]|ld x1, 0(x2) (next iter.)| & New address for load \\
+                \hline
+                \lstinline[language=Assembler]|x2| & \lstinline[language=Assembler]|addi x2, x2, 4| & \lstinline[language=Assembler]|sd x1, 0(x2) (next iter.)| & New address for store \\
+                \hline
+            \end{tabular}
+        \end{center}
+
+        \item \textbf{Show the timing of this instruction seqeunce for the 5-stage RISC pipeline without any forwarding or bypassing hardware but assuming that a register read and a write in the same clock cycle "forwards" through the register file, as between the \lstinline[language=Assembler]{add} and \lstinline[language=Assembler]{or} shown in Figure C.5. Use a pipeline timing chart like that in Figure C.8. Assume that the branch is handled by flushing the pipeline. If all memory references take 1 cycle, how many cycles does this loop take to execute?}
+        
+        \begin{center}
+            \begin{tabular}{|l|*{18}{c|}}
+                \hline
+                \multicolumn{1}{|c|}{} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 \\
+                \hline
+                ld x1, 0(x2) & F & D & X & M & W & & & & & & & & & & & & & \\
+                \hline
+                addi x1, x1, 1 & & F & s & s & D & X & M & W & & & & & & & & & & \\
+                \hline
+                sd x1, 0(x2) & & & F & s & s & D & X & M & W & & & & & & & & & \\
+                \hline
+                addi x2, x2, 4 & & & & F & D & X & M & W & & & & & & & & & & \\
+                \hline
+                dsub x4, x3, x2 & & & & & F & s & s & D & X & M & W & & & & & & & \\
+                \hline
+                bnez x4, Loop & & & & & & F & s & s & D & X & M & W & & & & & & \\
+                \hline
+                LD R1, 0(R2) & & & & & & & & & & & & & F & D & & & & \\
+                \hline
+            \end{tabular}
+        \end{center}
+        
+        Since the initial value of x3 = x2 + 396 and each iteration of the loop adds 4 to x2, the total number of iterations is 99.
+        
+        Notice that there are eight cycles lost to RAW hazards including the branch instruction. Two cycles are lost after the branch because of the instruction flushing.
+        
+        It takes 16 cycles between loop instances so, the total number of cycles is 98 × 16 + 18 = 1586
+        
+        The last loop takes two additional cycles since this latency cannot be overlapped with additional loop instances.
+
+        \item \textbf{Show the timing of this instruction sequence for the 5-stage RISC pipeline with full forwarding and bypassing hardware. Use a pipeline timing chart like that shown in Figure C.8. Assume that the branch is handled by predicting it as not taken. If all memory references take 1 cycle, how many cycles does this loop take to execute?}
+        
+        \begin{center}
+            \begin{tabular}{|l|*{18}{c|}}
+                \hline
+                \multicolumn{1}{|c|}{} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 \\
+                \hline
+                ld x1, 0(x2) & F & D & X & M & W & & & & & & & & & & & & & \\
+                \hline
+                addi x1, x1, \#1 & & F & D & s & X & M & W & & & & & & & & & & & \\
+                \hline
+                sd x1, 0(x2) & & & F & s & D & X & M & W & & & & & & & & & & \\
+                \hline
+                addi x2, x2, \#4 & & & & F & D & X & M & W & & & & & & & & & & \\
+                \hline
+                dsub x4, x3, x2 & & & & & F & D & X & M & W & & & & & & & & & \\
+                \hline
+                bnez x4, Loop & & & & & & F & s & D & X & M & W & & & & & & & \\
+                \hline
+                (incorrect instruction) & & & & & & & F & s & s & s & s & & & & & & & \\
+                \hline
+                ld x1, 0(x2) & & & & & & & & & & & & F & D & X & M & W & & \\
+                \hline
+            \end{tabular}
+        \end{center}
+        
+        Again, we have 99 iterations. There are two RAW stalls and a flush after the branch since the branch is taken. The total number of cycles is 9 × 98 + 12 = 894
+        
+        The last loop takes three additional cycles since this latency cannot be overlapped with additional loop instances.
+
+        \item \textbf{Show the timing of this instruction sequence for the 5-stage RISC peipeline with full forwarding and bypassing hardware, as shown in Figure C.6. Use a pipeline timing chart like that shown in Figure C.8. Assume that the branch is handled by predicting it as taken. If all memory references take 1 cycle, how many cycles does this loop take to execute?}
+        
+        \begin{center}
+            \begin{tabular}{|l|*{18}{c|}}
+                \hline
+                \multicolumn{1}{|c|}{} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 \\
+                \hline
+                ld x1, 0(x2) & F & D & X & M & W & & & & & & & & & & & & & \\
+                \hline
+                addi x1, x1, \#1 & & F & D & s & X & M & W & & & & & & & & & & & \\
+                \hline
+                sd x1, 0(x2) & & & F & s & D & X & M & W & & & & & & & & & & \\
+                \hline
+                addi x2, x2, \#4 & & & & F & D & X & M & W & & & & & & & & & & \\
+                \hline
+                dsub x4, x3, x2 & & & & & F & D & X & M & W & & & & & & & & & \\
+                \hline
+                bnez x4, Loop & & & & & & F & s & D & X & M & W & & & & & & & \\
+                \hline
+                ld x1, 0(x2) & & & & & & & & & & & & F & D & X & M & W & & \\
+                \hline
+            \end{tabular}
+        \end{center}
+        
+        Again, we have 99 iterations. We still experience two RAW stalls, but since we correctly predict the branch, we do not need to flush after the branch. Thus, we have only 8 × 98 + 12 = 796 cycles.
+
+        \item \textbf{High-performance processors have very deep pipelines - more than 15 stages. Imagine that you have a 10-stage pipeline in which every stage of the 5-stage pipeline has been split in two. The only catch is that, for data forwarding, data are forwarded from the end of a \textit{pair of stages} to the beginning of the two stages where they are needed. For example, data are forwarded from the output of the second execute stage to the input of the first execute stage, still carrying a 1-cycle delay. Show the timing of this instruction sequence for the 10-stage RISC pipeline with full forwarding and bypassing hardware. Use a pipeline timing chart like that shown in Figure C.8 (but with stages labeled IF1, IF2, ID1, etc.). Assume that the branch is handled by predicting it as taken. If all memory references take 1 cycle, how many cycles does this loop take to execute?}
+        
+        \begin{center}
+            \begin{tabular}{|l|*{20}{c|}}
+                \hline
+                \multicolumn{1}{|c|}{} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20 \\
+                \hline
+                ld x1, 0(x2) & F1 & F2 & D1 & D2 & X1 & X2 & M1 & M2 & W1 & W2 & & & & & & & & & & \\
+                \hline
+                addi x1, x1, \# & & F1 & F2 & D1 & D2 & s & s & s & X1 & X2 & M1 & M2 & W1 & W2 & & & & & & \\
+                \hline
+                sd x1, 0(x2) & & & F1 & F2 & D1 & D2 & s & s & s & X1 & X2 & M1 & M2 & W1 & W2 & & & & & \\
+                \hline
+                addi x2, x2, \#4 & & & & F1 & F2 & D1 & D2 & s & s & s & X1 & X2 & M1 & M2 & W1 & W2 & & & & \\
+                \hline
+                dsub x4, x3, x2 & & & & & F1 & s & s & s & F2 & D1 & D2 & s & X1 & X2 & M1 & M2 & W1 & W2 & & \\
+                \hline
+                bnez x4, Loop & & & & & & F1 & F2 & D1 & s & D2 & X1 & X2 & M1 & M2 & W1 & W2 & & & & \\
+                \hline
+                ld x1, 0(x2) & & & & & & & F1 & F2 & s & D1 & D2 & X1 & X2 & M1 & M2 & W1 & W2 & & & \\
+                \hline
+            \end{tabular}
+        \end{center}
+        
+        We again have 99 iterations. There are three RAW stalls between the ld and addi, and one RAW stall between the daddi and dsub. Because of the branch prediction, 98 of those iterations overlap significantly. The total number of cycles is 10 × 98 + 19 = 999
+
+        \item \textbf{Assume that in the 5-stage pipeline, the longest stage requires \SI{0.8}{ns}, and the pipeline register delay is 0.1 \SI{0.1}{ns}. What is the clock cycle time of the 5-stage pipeline? If the 10-stage peipeline splits all stages in half, what is the cycle time of the 10-stage machine?}
+        
+        Clock-cycle time = Cycle time for longest stage + Register delay
+        
+        For the 5-stage pipeline:
+        Clock-cycle time = 0.8 + 0.1 = 0.9 ns
+        
+        For the 10-stage pipeline:
+        Clock-cycle time = $\frac{0.8}{2} + 0.1 = 0.5$ ns
+        
+        \item \textbf{Using your answers from parts (d) and (e), determine the cycles per instruction (CPI) for the loop on a 5-stage piepline and a 10-stage pipeline. Make sure you count only from when the first instruction reaches the write-back stage to the end. Do not count the start-up of the first instruction. Using the clock cycle time calculated in part (f), calculate the average instruction execute time for each machine.}
+        
+        We know that:
+        CPI = $\frac{\text{Number of cycles in Total}}{\text{Total Instructions Executed}}$
+        
+        Average Instruction Time = CPI × Cycle Time
+        
+        CPI of 5-stage Pipeline = $\frac{796}{99 \times 6} = 1.34$
+        
+        Avg Inst Exe Time 5-stage = 1.34 × 0.9 = 1.21 ns
+        
+        CPI of 10-stage Pipeline = $\frac{999}{99 \times 6} = 1.68$
+        
+        Avg Inst Exe Time 10-stage = 1.68 × 0.5 = 0.84 ns
+    \end{enumerate}
+    
+    \item \textbf{Branch Hazards - Solve Problem C.2 on page C-72.}
+    \begin{center}
+        \begin{tabular}{ |c|c| }
+            \hline
+            \textbf{Instruction} & 15\%\\
+            \hline
+            \textbf{Jumps and calls} & 1\% \\
+            \hline
+            \textbf{Taken conditional branches} & 60\% are taken \\
+            \hline
+        \end{tabular}
+    \end{center}
+    
+    \begin{enumerate}
+        \item \textbf{We are examining a four-stage pipeline where the branch is resolved at the end of the second cycle for unconditional branches and at the end of the second cycle for unconditional branches and at the end of the third cycle for conditional branches. Assuming that only the first pipe stage can always be completed independent of whether the branch is taken and ignoring other pipeline stalls, how much faster would the machine be without any branch hazards?}
+        
+        The performance of ideal pipeline without branch hazards is the pipeline depth, which is 4.
+        
+        Next, for branch hazards, we need to figure out the stall cycles for each type of branches:
+        \begin{itemize}
+            \item For unconditional branches, the stall cycle is 1.
+            \item For conditional branches which is taken, the stall cycles is 2.
+            \item For conditional branches which is not taken, the stall cycle is 1.
+        \end{itemize}
+        
+        Considering the frequencies of different types of branches:
+        
+        The performance of pipeline with branch hazards = $\frac{1}{1+\text{pipeline stalls}} \times \text{pipeline depth}$
+        
+        = $\frac{4}{1+(1 \times 1\% + 2 \times 15\% \times 60\% + 1 \times 15\% \times 40\%)} = 3.2$
+        
+        Speedup = $\frac{\text{Pipeline Speedup without Hazards}}{\text{Pipeline Speedup with Hazards}} = \frac{4}{3.2} = 1.25$
+        
+        \item \textbf{Now assume a high-performance processor in which we have a 15-deep pipeline where the branch is resolved at the end of the fifth cycle for unconditional branches is resolved at the end of the fifth cycle for unconditional branches and at the end of the tenth cycle for conditional branches. Assuming that only the first pipe stage can always be completed independent of whether the branch is taken and ignoring other pipeline stalls, how much faster would the machine be without any branch hazards?}
+        
+        The stall cycles for different branches are derived as below:
+        \begin{itemize}
+            \item Unconditional Branches: 4
+            \item Conditional Branches (taken): 9
+            \item Conditional Branches (not taken): 8
+        \end{itemize}
+        
+        The performance of pipeline with branch hazards = $\frac{1}{1 + 4 \times 1\% + 9 \times 15\% \times 60\% + 8 \times 15\% \times 40\%} = \frac{15}{2.33}$
+        
+        The speedup of the ideal pipeline over the one with branch hazards = $\frac{15}{\frac{15}{2.33}} = 2.33$
+    \end{enumerate}
+    
+    \item \textbf{Deep Pipeline Performance Analysis - Solve Problem C.7 on page C-75.}
+    
+    \textbf{In this problem, we will explre how deepening the pipeline affects performance in two ways: faster clock cycle and increased stalls due to data control and hazards. Assume that the original machine is a 5-stage pipeline with a \SI{1}{ns} clock cycle. The second machine is a 12-stage pipeline with a \SI{0.6}{ns} clock cycle. The 5-stage pipeline experiences a stall due to a data hazard every five instructions, whereas the 12-stage pipeline experiences three stalls every eight instructions. In addition, branches constitute 20\% of the instructions, and the misprediction rate for both machines is 5\%.}
+    
+    \begin{enumerate}
+        \item \textbf{What is the speedup of the 12-stage pipeline over the 5-stage pipeline, taking into account only data hazards?}
+        
+        Given 5-stage pipeline experiences a stall due to a hazard every 5 instructions and 12 stage pipeline experiences three stalls every eight instructions.
+        
+        Execution Time = IC × CPI × Cycle Time
+        
+        Speedup = $\frac{\text{Execution Time of 5-stage Pipeline}}{\text{Execution Time of 12-stage Pipeline}}$
+        
+        = $\frac{IC \times \frac{6}{5} \times 1}{IC \times \frac{11}{8} \times 0.6} = 1.45$
+        
+        \item \textbf{If the branch mispredict penalty for the first machine is 2 cycles but the second machine is 5 cycles, what are the CPIs of each, taking into account the stalls due to branch mispredictions?}
+        
+        The branch mis predict penalty for the first machine = 2 cycles
+        
+        The branch mis predict penalty for the second machine = 5 cycles
+        
+        CPI(5-stage) = Original CPI without branch mispredict + mispredict penalty × percentage of branch instructions × mispredict rate
+        
+        = $\frac{6}{5} + 0.20 \times 0.05 \times 2 = 1.22$
+        
+        CPI(12-stage) = $\frac{11}{8} + 0.20 \times 0.05 \times 5 = 1.425$
+        
+        Speedup = $\frac{IC \times 1.22 \times 1}{IC \times 1.425 \times 0.6} = 1.42$
+    \end{enumerate}
+    
+    \item \textbf{The following series of branch outcomes occurs for a single branch in a program. (T means the branch is taken, N means the branch is not taken).}
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+            \hline
+            \textbf{Index} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 \\
+            \hline
+            \textbf{Branch Outcome} & T & T & N & T & N & T & T & T & T & N & T & T & N \\
+            \hline
+        \end{tabular}
+    \end{center}
+    
+    \begin{enumerate}
+        \item \textbf{Assume that we are trying to predict this sequence with a Branch History Table (BHT) using a 1-bit prediction. The counters of the BHT are initialized to the N state. Which of the branches would be mispredicted? Show their indices.}
+        
+        1-bit predictor results:
+        
+        \begin{center}
+            \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+                \hline
+                \textbf{Index} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 \\
+                \hline
+                \textbf{Outcome} & T & T & N & T & N & T & T & T & T & N & T & T & N \\
+                \hline
+                \textbf{Prediction} & N & T & T & N & T & N & T & T & T & T & N & T & T \\
+                \hline
+                \textbf{Mispredicted?} & Yes & No & Yes & Yes & Yes & Yes & No & No & No & Yes & Yes & No & Yes \\
+                \hline
+            \end{tabular}
+        \end{center}
+        
+        Total mispredictions: 8 (at indices 1, 3, 4, 5, 6, 10, 11, 13)
+        
+        \item \textbf{Repeat the above exercise with a 2-bit predictor as shown in Figure C.15 initialized to 10.}
+        
+        2-bit predictor results (00: strongly not taken, 01: weakly not taken, 10: weakly taken, 11: strongly taken):
+        
+        \begin{center}
+            \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+                \hline
+                \textbf{Index} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 \\
+                \hline
+                \textbf{Outcome} & T & T & N & T & N & T & T & T & T & N & T & T & N \\
+                \hline
+                \textbf{State} & 10 & 11 & 11 & 10 & 11 & 10 & 11 & 11 & 11 & 11 & 10 & 11 & 11 \\
+                \hline
+                \textbf{Prediction} & T & T & T & T & T & T & T & T & T & T & T & T & T \\
+                \hline
+                \textbf{Mispredicted?} & No & No & Yes & No & Yes & No & No & No & No & Yes & No & No & Yes \\
+                \hline
+            \end{tabular}
+        \end{center}
+        
+        Total mispredictions: 4 (at indices 3, 5, 10, 13)
+    \end{enumerate}
+    
+    \item \textbf{Performance Evalution - Solve 3.1 on page 266.}
+    
+    \textbf{What is the baseline performance (in cycles, per loop iteration) of the code sequence in Figure 3.47 if no new instruction's execution could be initiated until the previous instruction's execution had completed? Ignore front-end detch and decode. Assume for now that execution does not stall for lack of the next instruction, but only one instruction/cycle can be issued. Assume the branch is taken, and that there is a one-cycle branch delay slot.}
+    
+    The baseline performance (in cycles, per loop iteration) of the code sequence in Figure 3.47, if no new instruction's execution could be initiated until the previous instruction's execution had completed is 37 cycles. 
+    
+    Each instruction requires one clock cycle of execution (a clock cycle in which that instruction, and only that instruction, is occupying the execution units; since every instruction must execute, the loop will take at least that many clock cycles). To that base number, we add the extra latency cycles. Also remember the additional cycle for branch delay slot.
+    
+    \item \textbf{Ideal Dependency Detection - Solve 3.2 on page 267.}
+    
+    \textbf{Think about what latency numbers really mean - they indicate the number of cycles a given function requires to produce its output. If the overall pipeline stalls for the latency cycles of each functional unit, then you are at least guaranteed that any pair of back-to-back instructions (a "producer" followed by a "consumer") will execute correctly. But not all instruction pairs have a producer/consumer relationship. Sometimes two adjacent instructions have nothing to do with each other. How many cycles would the loop body in the code sequence in Figure 3.47 require if the pipeline detected true data dependencies and only stalled on those, rather than blindly stalling everything just because one functional unit is busy? Show the code with \lstinline[language=Assembler]{<stall>} cycles to be inserted into the code sequence.) Think of it this way: a one-cycle instruction has latency $1+0$, meaning zero extra wait states. So, latency $1+1$ implies one stall cycle; latency $1+N$ has $N$ extra stall cycles.}
+    
+    How many cycles would the loop body in the code sequence in Figure 3.47 require if the pipeline detected true data dependencies and only stalled on those, rather than blindly stalling everything just because one functional unit is busy? → We need 26 cycles, as shown below. 
+    
+    Remember, the point of the extra latency cycles is to allow an instruction to complete whatever actions it needs, in order to produce its correct output. Until that output is ready, no dependent instructions can be executed. So, the first fld must stall the next instruction for three clock cycles. The fmul.d produces a result for its successor, and therefore must stall 4 more clocks, and so on.
+    
+    \begin{lstlisting}[language=Assembler]
+Loop: fld f2, 0(Rx)
+      <stall fld>
+      <stall fld>
+      <stall fld>
+      fmul.d f2, f0, f2 
+      <stall fmul>
+      <stall fmul>
+      <stall fmul>
+      <stall fmul>
+      fdiv.d f8, f2, f0 
+      fld f4, 0(Ry)
+      <stall fld>
+      <stall fld>
+      <stall fld>
+      fadd.d f4, f0, f4
+      <stall fdiv>
+      <stall fdiv>
+      <stall fdiv>
+      <stall fdiv>
+      <stall fdiv>
+      fadd.d f10, f8, f2
+      fsd f4, 0(Ry) 
+      addi Rx, Rx, 8
+      addi Ry, Ry, 8
+      sub x20, x4, Rx 
+      bnz x20, Loop
+    \end{lstlisting}
+    
+    \item \textbf{Dynamic Scheduling - Draw the basic structure of a RISC-V floating point unit for Tomasulo's algorithm. Explain how code is executed with an example.}
+    
+    % Structure diagram for Tomasulo's algorithm
+    % Using text description instead of image since figures/tomasulo_structure.png is missing
+    
+    \begin{center}
+        \textbf{Structure of a RISC-V Floating Point Unit for Tomasulo's Algorithm}
+        
+        The Tomasulo's algorithm implementation consists of the following key components:
+        \begin{itemize}
+            \item \textbf{Instruction Queue}: Holds instructions waiting to be issued
+            \item \textbf{Reservation Stations}: Hold operations and operands for instructions that have been issued
+            \item \textbf{Register File}: Contains the architectural registers
+            \item \textbf{Register Status Table}: Tracks which reservation station will produce each register value
+            \item \textbf{Functional Units}: Execute the operations (e.g., Load/Store, FP Adders, FP Multipliers)
+            \item \textbf{Common Data Bus (CDB)}: Broadcasts results to all waiting reservation stations
+        \end{itemize}
+    \end{center}
+    
+    Example of a code sequence:
+    \begin{enumerate}
+        \item fld f6, 32(x2)
+        \item fld f2, 44(x3)
+        \item fmul.d f0, f2, f4
+        \item fsub.d f8, f2, f6
+        \item fdiv.d f0, f0, f6
+        \item fadd.d f6, f8, f2
+    \end{enumerate}
+    
+    One of the advantages of using Tomasulo's Algorithm is the elimination of WAW and WAR hazards, accomplished by renaming registers using the reservation stations and by storing operands into the reservation station as soon as they are available.
+
+    The code sequence issues both the fdiv.d and the fadd.d even though there is a WAR hazard involving f6. The hazard is eliminated in one of two ways. First, if the instruction that provides the value for the fdiv.d has completed, then Vk will store the result, allowing fdiv.d to execute independent of the fadd.d.
+
+    On the other hand, if the fld hasn't completed, then Qk will point to the Load1 reservation station, and the fdiv.d instruction will be independent of the fadd.d. Any uses of the result of the fdiv.d will point to the reservation station, allowing the fadd.d to complete and store its value into the registers without affecting the fdiv.d.
+
+    \begin{figure}[ht]
+        \centering
+        \begin{tabular}{|l|l|l|l|l|l|l|l|}
+            \hline
+            \multicolumn{8}{|c|}{Instruction status} \\
+            \hline
+            \multicolumn{2}{|c|}{Instruction} & \multicolumn{2}{c|}{Issue} & \multicolumn{2}{c|}{Execute} & \multicolumn{2}{c|}{Write result} \\
+            \hline
+            \multicolumn{2}{|l|}{fld f6,32(x2)} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{$\checkmark$} \\
+            \hline
+            \multicolumn{2}{|l|}{fld f2,44(x3)} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{} \\
+            \hline
+            \multicolumn{2}{|l|}{fmul.d f0,f2,f4} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{} & \multicolumn{2}{l|}{} \\
+            \hline
+            \multicolumn{2}{|l|}{fsub.d f8,f2,f6} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{} & \multicolumn{2}{l|}{} \\
+            \hline
+            \multicolumn{2}{|l|}{fdiv.d f0,f0,f6} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{} & \multicolumn{2}{l|}{} \\
+            \hline
+            \multicolumn{2}{|l|}{fadd.d f6,f8,f2} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{} & \multicolumn{2}{l|}{} \\
+            \hline
+        \end{tabular}
+        
+        \vspace{0.5cm}
+        
+        \begin{tabular}{|l|l|l|l|l|l|l|l|}
+            \hline
+            \multicolumn{8}{|c|}{Reservation stations} \\
+            \hline
+            Name & Busy & Op & Vj & Vk & Qj & Qk & A \\
+            \hline
+            Load1 & No & & & & & & \\
+            \hline
+            Load2 & Yes & Load & & & & & 44+Regs[x3] \\
+            \hline
+            Add1 & Yes & SUB & Mem[32+Regs[x2]] & & Load2 & & \\
+            \hline
+            Add2 & Yes & ADD & & & Add1 & Load2 & \\
+            \hline
+            Add3 & No & & & & & & \\
+            \hline
+            Mult1 & Yes & MUL & Regs[f4] & & Load2 & & \\
+            \hline
+            Mult2 & Yes & DIV & Mem[32+Regs[x2]] & & Mult1 & & \\
+            \hline
+        \end{tabular}
+        
+        \vspace{0.5cm}
+        
+        \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
+            \hline
+            \multicolumn{10}{|c|}{Register status} \\
+            \hline
+            Field & f0 & f2 & f4 & f6 & f8 & f10 & f12 & ... & f30 \\
+            \hline
+            Qi & Mult1 & Load2 & & Add2 & Add1 & Mult2 & & & \\
+            \hline
+        \end{tabular}
+        \caption{Reservation stations and register tags shown when all of the instructions have been issued but only the first load instruction has completed and written its results to the CDB.}
+    \end{figure}
+
+    The second load has completed effective address calculation but is waiting on the memory unit. The fadd.d instruction, which has a WAR hazard at the WB stage, has issued and could complete before the fdiv.d initiates.
+\end{enumerate}
+    
+    Example of a code sequence:
+    \begin{enumerate}
+        \item fld f6, 32(x2)
+        \item fld f2, 44(x3)
+        \item fmul.d f0, f2, f4
+        \item fsub.d f8, f2, f6
+        \item fdiv.d f0, f0, f6
+        \item fadd.d f6, f8, f2
+    \end{enumerate}
+    
+    One of the advantages of using Tomasulo's Algorithm is the elimination of WAW and WAR hazards, accomplished by renaming registers using the reservation stations and by storing operands into the reservation station as soon as they are available.
+
+    The code sequence issues both the fdiv.d and the fadd.d even though there is a WAR hazard involving f6. The hazard is eliminated in one of two ways. First, if the instruction that provides the value for the fdiv.d has completed, then Vk will store the result, allowing fdiv.d to execute independent of the fadd.d.
+
+    On the other hand, if the fld hasn't completed, then Qk will point to the Load1 reservation station, and the fdiv.d instruction will be independent of the fadd.d. Any uses of the result of the fdiv.d will point to the reservation station, allowing the fadd.d to complete and store its value into the registers without affecting the fdiv.d.
+
+    \begin{figure}[h]
+        \centering
+        \begin{tabular}{|l|l|l|l|l|l|l|l|}
+            \hline
+            \multicolumn{8}{|c|}{Instruction status} \\
+            \hline
+            \multicolumn{2}{|c|}{Instruction} & \multicolumn{2}{c|}{Issue} & \multicolumn{2}{c|}{Execute} & \multicolumn{2}{c|}{Write result} \\
+            \hline
+            \multicolumn{2}{|l|}{fld f6,32(x2)} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{$\checkmark$} \\
+            \hline
+            \multicolumn{2}{|l|}{fld f2,44(x3)} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{} \\
+            \hline
+            \multicolumn{2}{|l|}{fmul.d f0,f2,f4} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{} & \multicolumn{2}{l|}{} \\
+            \hline
+            \multicolumn{2}{|l|}{fsub.d f8,f2,f6} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{} & \multicolumn{2}{l|}{} \\
+            \hline
+            \multicolumn{2}{|l|}{fdiv.d f0,f0,f6} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{} & \multicolumn{2}{l|}{} \\
+            \hline
+            \multicolumn{2}{|l|}{fadd.d f6,f8,f2} & \multicolumn{2}{l|}{$\checkmark$} & \multicolumn{2}{l|}{} & \multicolumn{2}{l|}{} \\
+            \hline
+        \end{tabular}
+        
+        \vspace{0.5cm}
+        
+        \begin{tabular}{|l|l|l|l|l|l|l|l|}
+            \hline
+            \multicolumn{8}{|c|}{Reservation stations} \\
+            \hline
+            Name & Busy & Op & Vj & Vk & Qj & Qk & A \\
+            \hline
+            Load1 & No & & & & & & \\
+            \hline
+            Load2 & Yes & Load & & & & & 44+Regs[x3] \\
+            \hline
+            Add1 & Yes & SUB & Mem[32+Regs[x2]] & & Load2 & & \\
+            \hline
+            Add2 & Yes & ADD & & & Add1 & Load2 & \\
+            \hline
+            Add3 & No & & & & & & \\
+            \hline
+            Mult1 & Yes & MUL & Regs[f4] & & Load2 & & \\
+            \hline
+            Mult2 & Yes & DIV & Mem[32+Regs[x2]] & & Mult1 & & \\
+            \hline
+        \end{tabular}
+        
+        \vspace{0.5cm}
+        
+        \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
+            \hline
+            \multicolumn{10}{|c|}{Register status} \\
+            \hline
+            Field & f0 & f2 & f4 & f6 & f8 & f10 & f12 & ... & f30 \\
+            \hline
+            Qi & Mult1 & Load2 & & Add2 & Add1 & Mult2 & & & \\
+            \hline
+        \end{tabular}
+        \caption{Reservation stations and register tags shown when all of the instructions have been issued but only the first load instruction has completed and written its results to the CDB.}
+    \end{figure}
+
+    The second load has completed effective address calculation but is waiting on the memory unit. The fadd.d instruction, which has a WAR hazard at the WB stage, has issued and could complete before the fdiv.d initiates.

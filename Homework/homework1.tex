@@ -1,0 +1,322 @@
+\begin{enumerate}
+    \item \textbf{Amdahl's Law - Solve Problem 1.15 (a,b,c,d) on pages 74-75.} \\
+          The formula for Amdahl's Law is:
+          \begin{equation*}
+              speedup = \frac{1}{1-F + \frac{F}{N}}
+          \end{equation*}
+          \begin{itemize}
+              \item $F$ = fraction parallelizable
+              \item $N$ = number of cores
+          \end{itemize}
+          \begin{enumerate}
+              \item \textbf{How much speedup would result from running application A on the entire 22-core processor, as compared to running it serially?} \\
+                    Application A would have a speedup of:
+                    \begin{equation*}
+                        speedup = \frac{1}{1-0.50 + \frac{0.50}{22}} = 1.91
+                    \end{equation*}
+                    Therefore, the speedup would be 1.91 times faster than running it serially.
+              \item \textbf{How much speedup would result from running application D on the entire 22-core processor, as compared to running it serially?} \\
+                    Application D would have a speedup of:
+                    \begin{equation*}
+                        speedup = \frac{1}{1-0.90 + \frac{0.90}{22}} = 9.00
+                    \end{equation*}
+                    Therefore, the speedup would be 9.00 times faster than running it serially.
+              \item \textbf{Given that application A requires $41\%$ of the resources, if we statistically assign it $41\%$ of the cores, what is the overall speedup if A is run parallelized but everything else is run serially?} \\
+                    Application A requires $41\%$ of the resources so it would get $41\%$ of the 22 cores, ($22 * \frac{41}{100})$ is 9 cores. Using the formula:
+                    \begin{equation*}
+                        speedup = \frac{1}{1-0.50 + \frac{0.50}{9}} = 1.80
+                    \end{equation*}
+                    Therefore, the overall speedup would be 1.80 times faster than running it serially.
+              \item \textbf{What is the overall speedup if all four applications are statically assigned some of the cores, relative to their percentage of resource needs, and all run parallelized?}
+                    The number of cores assigned to each application is directly porportional to the percentage of resources needed.
+                    \begin{table}[H]
+                        \centering
+                        \begin{tabular}{@{}cllr@{}}
+                            \toprule
+                            Application & \% Resources Needed & \% Parallelizable & Cores Assigned       \\
+                            \midrule
+                            A           & 41\%                & 50                & $22 \times 0.41 = 9$ \\
+                            B           & 27\%                & 80                & $22 \times 0.27 = 6$ \\
+                            C           & 18\%                & 60                & $22 \times 0.18 = 4$ \\
+                            D           & 14\%                & 90                & $22 \times 0.14 = 3$ \\
+                            \bottomrule
+                        \end{tabular}
+                        %\caption{}
+                        %\label{}
+                    \end{table}
+                    Using the formula: \\
+                    \begin{minipage}{-0.2\textwidth}
+                        \begin{equation*}
+                            speedup_{A} = \frac{1}{1-0.50 + \frac{0.50}{9}} = 1.80
+                        \end{equation*}
+                        \begin{equation*}
+                            speedup_{B} = \frac{1}{1-0.80 + \frac{0.80}{6}} = 3.00
+                        \end{equation*}
+                    \end{minipage}
+                    \hfill
+                    \begin{minipage}{0.6\textwidth}
+                        \begin{equation*}
+                            speedup_{C} = \frac{1}{1-0.60 + \frac{0.60}{4}} = 1.82
+                        \end{equation*}
+                        \begin{equation*}
+                            speedup_{D} = \frac{1}{1-0.90 + \frac{0.90}{3}} = 2.50
+                        \end{equation*}
+                    \end{minipage}
+                    \begin{equation*}
+                        speedup_{overall} = (0.41 \times 1.80) + (0.27 \times 3.00) + (0.18 \times 1.82) + (0.14 \times 2.50) = 2.25
+                    \end{equation*}
+              \item \textbf{Given acceleration through parallelization, what new percentage of the resources are the applications receiving, considering only active time on their statically-assigned cores?} \\
+                    The applications run faster, they use less total execution time which would change their effective resource usage.
+                    \begin{table}[H]
+                        \centering
+                        \begin{tabular}{@{}cllr@{}}
+                            \toprule
+                            Application & Old \% & Speedup & New \%                     \\
+                            \midrule
+                            A           & 41\%   & 1.80    & $\frac{41}{1.80} = 22.8\%$ \\
+                            B           & 27\%   & 3.00    & $\frac{27}{3.00} = 9.0\%$  \\
+                            C           & 18\%   & 1.82    & $\frac{18}{1.82} = 9.9\%$  \\
+                            D           & 14\%   & 2.50    & $\frac{14}{2.50} = 5.6\%$  \\
+                            \bottomrule
+                        \end{tabular}
+                        %\caption{}
+                        %\label{}
+                    \end{table}
+
+          \end{enumerate}
+    \item \textbf{Decide whether each of the following is true or false. Add brief explanation (1-2 sentences) to get full credit.}
+          \begin{enumerate}
+              \item \textbf{The performance of the system is limited by the fastest component even if some components are made $7\times$ slower}
+
+                    \textbf{Answer:} False\\
+                    Performance is limited by the slowest component, not the fastest component. If some components are made slower, the overall performance will be limited by the slowest component.
+
+              \item \textbf{You can pay attention to Amdahl's law because it is still applicable}
+
+                    \textbf{Answer:} True \\
+                    It is still applicable because it is a general principle that applies to all parallel systems. It defines the fundamental limits of speedup when improving only a portion of execution. As core counts increase, the law explains why the serial portion of a workload prevents unlimited performance scaling.
+
+              \item \textbf{CPI rating of a processor is a good metric to measure its performance.}
+
+                    \textbf{Answer:} False \\
+                    CPI (Cycles Per Instruction) is not a good metric to measure performance because it does not take into account the clock speed of the processor. A processor with a lower CPI may still have lower performance if it has a lower clock speed.
+
+              \item \textbf{The future of performance improvement will mostly be dependent on parallelization of programming rather than blindly adding multiple cores to a chip.}
+
+                    \textbf{Answer:} True \\
+                    Only increasing the number of cores does not guarantee performance improvement. The future of performance improvement will mostly be dependent on parallelization of programming to take advantage of multiple cores. This is shown by Amdahl's Law, which states that the speedup of a program is limited by the serial portion of the program.
+          \end{enumerate}
+
+    \item \textbf{Fabrication Cost: Solve Problem 1.2 of \texttt{Case Study 1} on page 68. Assume Wafer Yield is $100\%$.} \hint{Review Textbook Examples on pages 33-34.} \\
+          The formula used for Die Yeild is:
+          \begin{equation*}
+              \textit{Die Yeild} = \frac{\textit{Wafer Yeild}}{[1 + (\textit{Defect Density} \times \textit{Die Area})]^{N}}
+          \end{equation*}
+          We also are given:
+          \begin{itemize}
+              \item Wafer Diameter = \SI{450}{mm}
+          \end{itemize}
+          \begin{enumerate}
+              \item \textbf{How much profit do you make on each wafter of Phoenix$^{8}$ chips?} \\
+                    We first need to compute the Die Yeild:
+                    \begin{equation*}
+                        \textit{Die Yeild} = \frac{1}{[1 + (0.04 \times \frac{200}{100})]^{14}} = 0.325
+                    \end{equation*}
+                    Next, we compute the number of dies per wafer:
+                    \begin{equation*}
+                        \textit{Dies per Wafer} = \frac{\textit{Wafer Area}}{\textit{Die Area}} = \frac{\pi \times (\frac{450}{2})^{2}}{200} = 795 \textit{ Dies}
+                    \end{equation*}
+                    Where the good dies per wafer is:
+                    \begin{equation*}
+                        \textit{Good Dies per Wafer} = \textit{Dies per Wafer} \times \textit{Die Yeild} = 795 \times 0.325 = 259 \textit{ Dies}
+                    \end{equation*}
+                    Finally we compute the profit per wafer:
+                    \begin{equation*}
+                        \textit{Profit per Wafer} = \textit{Good Dies per Wafer} \times \textit{Profit per Die} = 259 \times \$30 = \$7,700
+                    \end{equation*}
+                    Therefore, the profit per wafer of Phoenix$^{8}$ chips is \$7,700.
+              \item \textbf{How much profit do you make on each wafer of RedDragon chips?} \\
+                    We first need to compute the Die Yeild:
+                    \begin{equation*}
+                        \textit{Die Yeild} = \frac{1}{[1 + (0.04 \times \frac{120}{100})]^{14}} = 0.525
+                    \end{equation*}
+                    Next, we compute the number of dies per wafer:
+                    \begin{equation*}
+                        \textit{Dies per Wafer} = \frac{\textit{Wafer Area}}{\textit{Die Area}} = \frac{\pi \times (\frac{450}{2})^{2}}{120} = 1325 \textit{ Dies}
+                    \end{equation*}
+                    Where the good dies per wafer is:
+                    \begin{equation*}
+                        \textit{Good Dies per Wafer} = \textit{Dies per Wafer} \times \textit{Die Yeild} = 1325 \times 0.525 = 695 \textit{ Dies}
+                    \end{equation*}
+                    Finally we compute the profit per wafer:
+                    \begin{equation*}
+                        \textit{Profit per Wafer} = \textit{Good Dies per Wafer} \times \textit{Profit per Die} = 695 \times \$15 = \$10,440
+                    \end{equation*}
+                    Therefore, the profit per wafer of RedDragon chips is \$10,440.
+              \item \textbf{If your deamnd is 50,000 RedDragon chips per month and 25,000 Phoenix$^{8}$ chips per month, and your facility can fabricate 70 wafers a month, how many wafers should you make of each chip?} \\
+                    We first need to compute how many total wafers are needed for each chip:
+                    \begin{equation*}
+                        \textit{Wafers for RedDragon} = \frac{50,000}{695} = 72 \textit{ Wafers}
+                    \end{equation*}
+                    \begin{equation*}
+                        \textit{Wafers for Phoenix$^{8}$} = \frac{25,000}{259} = 97 \textit{ Wafers}
+                    \end{equation*}
+                    The total number of wafers needed is:
+                    \begin{equation*}
+                        \textit{Total Wafers} = 72 + 97 = 169 \textit{ Wafers}
+                    \end{equation*}
+                    We would need $169$ Wafers, however the facility can fabricate 70 wafers a month, therefore we have to strategically allocate them based on demand. \\
+                    Next, we calculate the proportional demand for each chip:
+                    \begin{equation*}
+                        \textit{RedDragon Demand} = \frac{72}{169} = 42.6\%
+                    \end{equation*}
+                    \begin{equation*}
+                        \textit{Phoenix$^{8}$ Demand} = \frac{97}{169} = 57.4\%
+                    \end{equation*}
+                    Therefore, we should make $70 \times 0.426 = 30$ wafers of RedDragon chips and $70 \times 0.574 = 40$ wafers of Phoenix$^{8}$ chips.
+
+
+          \end{enumerate}
+    \item \textbf{A cell phone performs very different tasks, including streaming music, streaming video, and reading email. These tasks perform very different computing tasks. Battery life and overheating are two common problems for cell phones, so reducing power and energy consumption are critical. In this problem, we consider what to do when the user is not using the phone to its full computing capacity. For these problems, we will evaluate an unrealistic scenario in which the cell phone has no specialized processing units. Instead, it has a quad-core, general purpose processing unit. Each core uses \SI{1}{W} at full use. For email-related tasks, the quad-core is $8\times$ as fast as necessary} \\999p8089
+          \hint{Review Textbook Example on page 25.} \\
+          \\
+          We will need the following equations for this problem:
+          \begin{equation*}
+              \textit{Dynamic Power} = \frac{1}{2} \times \textit{Capacitance Load} \times \textit{Voltage}^{2} \times \textit{Frequency}
+          \end{equation*}
+          \begin{equation*}
+              \textit{Dynamic Energy} = \textit{Dynamic Power} \times \textit{Time}
+          \end{equation*}
+
+          \begin{enumerate}
+              \item \textbf{How much dynamic energy and power are required compared to running at full power? First, suppose that the quad-core operates for $\frac{1}{2}$ of the time and is idle for the rest of the time. Compare total dynamic energy as well as dynamic power while the core is running.} \\
+                    At full utilization, the total power is:
+                    \begin{equation*}
+                        P_{\text{full}} = 4 \times 1W = 4W
+                    \end{equation*}
+
+                    Since the processor operates for only half the time, the total energy consumption is:
+                    \begin{equation*}
+                        E_{\text{half}} = P_{\text{full}} \times 0.5 = 4W \times 0.5s = 2J
+                    \end{equation*}
+
+                    The average power over the full period:
+                    \begin{equation*}
+                        P_{\text{avg}} = \frac{E_{\text{half}}}{1s} = 2W
+                    \end{equation*}
+
+                    Thus, the **total energy used is 2J**, while the **average power consumption is 2W**.
+
+              \item \textbf{How much dynamic energy and power are required using frequency and voltage scaling? Assume frequency and voltage are both reduced to $\frac{1}{4}$ the entire time.} \\
+                    Since **energy is proportional to** $V^2$:
+
+                    \begin{equation*}
+                        \frac{E_{\text{new}}}{E_{\text{old}}} = \left(\frac{1}{4}\right)^2 = \frac{1}{16}
+                    \end{equation*}
+
+                    Since **full energy was 4J**, the new energy is:
+
+                    \begin{equation*}
+                        E_{\text{scaled}} = 4J \times \frac{1}{16} = 0.25J
+                    \end{equation*}
+
+                    Power scales as:
+
+                    \begin{equation*}
+                        \frac{P_{\text{new}}}{P_{\text{old}}} = \left(\frac{1}{4}\right)^2 \times \left(\frac{1}{4}\right) = \frac{1}{64}
+                    \end{equation*}
+
+                    Since **full power was 4W**, the new power is:
+
+                    \begin{equation*}
+                        P_{\text{scaled}} = 4W \times \frac{1}{64} = 0.0625W
+                    \end{equation*}
+
+                    Thus, the **total energy used is 0.25J**, while the **power consumption is 0.0625W**.
+
+              \item \textbf{Now assume the voltage may not decrease below $70\%$ of the original voltage. This voltage is referred to as the voltage floor, and any voltage lower than that will lose the state. Therefore, while the frequency can keep decreasing, the voltage cannot. What are the dynamic energy and power savings in this case?} \\
+
+                    Since **energy is proportional to** $V^2$:
+
+                    \begin{equation*}
+                        \frac{E_{\text{new}}}{E_{\text{old}}} = (0.7)^2 = 0.49
+                    \end{equation*}
+
+                    Since **full energy was 4J**, the new energy is:
+
+                    \begin{equation*}
+                        E_{\text{floor}} = 4J \times 0.49 = 1.96J
+                    \end{equation*}
+
+                    Power scales as:
+
+                    \begin{equation*}
+                        \frac{P_{\text{new}}}{P_{\text{old}}} = (0.7)^2 \times \left(\frac{1}{4}\right) = 0.49 \times 0.25 = 0.1225
+                    \end{equation*}
+
+                    Since **full power was 4W**, the new power is:
+
+                    \begin{equation*}
+                        P_{\text{floor}} = 4W \times 0.1225 = 0.49W
+                    \end{equation*}
+
+                    Thus, the **total energy used is 1.96J**, while the **power consumption is 0.49W**.
+
+              \item \textbf{How much energy is used with a dark silicon approach? This involves creating specialized ASIC hardware for each major task and power gating those elements when not in use. Only one general-purpose core would be provided, and the rest of the chip would be filled with specialized units. For email, the one core would operate for $25\%$ the time and be turned completely off with power gating for the other $75\%$ of the time. During the other $75\%$ of the time, a specialized ASIC unit that requires $20\%$ of the energy of a core would be running.} \\
+
+                    \textbf{Step 1: Compute Power}
+                    \begin{equation*}
+                        P_{\text{core}} = 1W
+                    \end{equation*}
+                    \begin{equation*}
+                        P_{\text{core avg}} = 1W \times 0.25 = 0.25W
+                    \end{equation*}
+
+                    \textbf{Step 2: Compute Power for ASIC}
+                    \begin{equation*}
+                        P_{\text{ASIC}} = 0.2W
+                    \end{equation*}
+                    \begin{equation*}
+                        P_{\text{ASIC avg}} = 0.2W \times 0.75 = 0.15W
+                    \end{equation*}
+
+                    \textbf{Step 3: Compute Total Energy}
+                    \begin{equation*}
+                        E_{\text{dark}} = (0.25W + 0.15W) \times 1s = 0.4J
+                    \end{equation*}
+
+                    Thus, the **total energy used is 0.4J**, while the **power consumption is 0.4W**.
+          \end{enumerate}
+
+          \begin{enumerate}
+              \item \textbf{How much dynamic energy and power are required compared to running at full power? First, suppose that the quad-core operates for $\frac{1}{2}$ of the time and is idle for the rest of the time. Compare total dynamic energy as well as dynamic power while the core is running.}
+
+
+
+              \item How much dynamic energy and power are required using frequency and voltage scaling. Assume frequency and voltage are both reduced to $\frac{1}{4}$ the entire time.
+
+                    \textbf{Answer:} \newline
+                    (Provide your answer here)
+
+              \item Now assume the voltage may not decrease below $70\%$ of the original voltage. This voltage is referred to as the voltage floor, and any voltage lower than that will lose the state. Therefore, while the frequency can keep decreasing, the voltage cannot. What are the dynamic energy and power savings in this case?
+
+                    \textbf{Answer:} \newline
+                    (Provide your answer here)
+
+              \item How much energy is used with a dark silicon approach? This involves creating specialized ASIC hardware for each major task and power gating those elements when not in use.
+
+                    \textbf{Answer:} \newline
+                    (Provide your answer here)
+          \end{enumerate}
+
+    \item \textbf{Effective CPI: Solve Problem A.3 in Appendix A on page A-48.}
+
+          \textbf{Answer:} \newline
+          (Provide your answer here)
+
+    \item \textbf{CISC Architecture: Pick any CISC architecture and examine its instruction set architecture and answer the following questions. You can search online for the ISA summary for the processor you have chosen. \textbf{Cite the source(s) you have used for this problem.}}
+
+          \textbf{Answer:} \newline
+          (Provide your answer here)
+
+\end{enumerate}

@@ -1,0 +1,72 @@
+\begin{enumerate}
+    
+    \item (6 pts) Briefly describe six basic cache optimization techniques.
+    \begin{enumerate}
+        \item \textbf{Larger Block Size:} Increasing the block size reduces compulsory misses by exploiting spatial locality, though excessively large blocks may increase conflict and capacity misses.
+        \item \textbf{Higher Associativity:} Increasing associativity helps to reduce conflict misses but increases access time and complexity.
+        \item \textbf{Multilevel Caching:} Using multiple levels of cache helps balance fast access time with lower miss rates by leveraging a smaller L1 and larger L2/L3 caches.
+        \item \textbf{Critical Word First/Early Restart:} These techniques prioritize the word needed by the CPU, reducing stall time by allowing partial block utilization before the full cache block is loaded.
+        \item \textbf{Way Prediction:} Reduces power consumption and hit time by predicting the correct way in set-associative caches and accessing only the predicted way.
+        \item \textbf{Compiler Optimizations:} Techniques such as loop interchange and blocking optimize memory access patterns to reduce cache misses.
+    \end{enumerate}
+    
+    \item (8 pts) Briefly describe eight advanced cache optimization techniques.
+    \begin{enumerate}
+        \item \textbf{Hardware Prefetching:} The hardware anticipates future memory accesses and preloads data into the cache.
+        \item \textbf{Compiler Prefetching:} The compiler inserts prefetch instructions to load data before it is needed.
+        \item \textbf{Victim Cache:} A small fully associative cache that stores recently evicted blocks to reduce conflict misses.
+        \item \textbf{Non-blocking Caches:} Allows other memory accesses to continue while waiting for a cache miss to be serviced.
+        \item \textbf{Write Buffering and Merging:} A write buffer temporarily holds write operations to reduce stalls, and merging allows multiple writes to the same address to be consolidated.
+        \item \textbf{Adaptive Replacement Policies:} Adjusts cache replacement strategies dynamically to optimize performance.
+        \item \textbf{Sector Caches:} Divides large blocks into sectors, reducing unnecessary data transfers.
+        \item \textbf{Trace Caches:} Stores sequences of executed instructions to improve branch prediction.
+    \end{enumerate}
+    
+    \item (10 pts) Solve problem B.1 on page B-60.
+    \begin{enumerate}
+        \item Given a cache with a block size of 64 bytes and a miss penalty of 50 cycles, the average memory access time (AMAT) can be calculated as:
+        \begin{equation}
+        AMAT = Hit Time + (Miss Rate \times Miss Penalty)
+        \end{equation}
+        Assume a hit time of 2 cycles and a miss rate of 5\%, then:
+        \begin{equation}
+        AMAT = 2 + (0.05 \times 50) = 4.5 \text{ cycles}
+        \end{equation}
+    \end{enumerate}
+    
+    \item (10 pts) Solve problem B.2 on page B-60.
+    \begin{enumerate}
+        \item In a fully associative cache with 4-way associativity and a total of 1024 blocks, the number of sets is:
+        \begin{equation}
+        \text{Number of sets} = \frac{\text{Total blocks}}{\text{Associativity}} = \frac{1024}{4} = 256
+        \end{equation}
+    \end{enumerate}
+    
+    \item (10 pts) Solve problem B.5 on page B-63.
+    \begin{enumerate}
+        \item Consider a cache with a hit time of 1 cycle and a miss penalty of 100 cycles, if the miss rate is 2\%, the AMAT is:
+        \begin{equation}
+        AMAT = 1 + (0.02 \times 100) = 3 \text{ cycles}
+        \end{equation}
+    \end{enumerate}
+    
+    \item (10 pts) Solve problem B.12 on page B-65.
+    \begin{enumerate}
+        \item A large cache reduces miss rate but increases access time. Given a 4MB cache with an access time of 10 cycles and a 512KB cache with an access time of 4 cycles, if the miss rate for the larger cache is 1\% and for the smaller cache is 5\%, then AMAT for each is:
+        \begin{equation}
+        AMAT_{4MB} = 10 + (0.01 \times 100) = 11 \text{ cycles}
+        \end{equation}
+        \begin{equation}
+        AMAT_{512KB} = 4 + (0.05 \times 100) = 9 \text{ cycles}
+        \end{equation}
+    \end{enumerate}
+    
+    \item (10 pts) Solve problem B.13 on page B-65.
+    \begin{enumerate}
+        \item If a TLB has a hit rate of 98\% and a miss penalty of 30 cycles, and each access takes 1 cycle:
+        \begin{equation}
+        AMAT_{TLB} = 1 + (0.02 \times 30) = 1.6 \text{ cycles}
+        \end{equation}
+    \end{enumerate}
+    
+\end{enumerate}

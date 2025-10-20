@@ -1,0 +1,120 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Basic Document Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[margin=0.5in,top=1in,bottom=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{mathptmx}  % Times font for text and math (classic solution)
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Math Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% List and Enumeration Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{enumitem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Algorithm Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[linesnumbered, noend]{algorithm2e}
+\usepackage{mdframed} % For shaded backgrounds
+\usepackage{xcolor} % For color customization
+
+% Define custom color for the shaded background
+\definecolor{algorithmBackground}{rgb}{0.95,0.95,0.92}
+
+\SetKw{KwEnd}{end} % Define custom end keyword
+
+% Define custom environment
+\newenvironment{shadedalgorithm}[1][]{%
+    \begin{center}%
+        \begin{minipage}{0.75\textwidth}%
+            \setlength{\algomargin}{1em}%
+            \begin{mdframed}[backgroundcolor=algorithmBackground, roundcorner=5pt, frametitle={#1}]%
+                \begin{algorithm}[H]%
+                    }{%
+                \end{algorithm}%
+            \end{mdframed}%
+        \end{minipage}%
+    \end{center}%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Code Formatting Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Code Colors
+\definecolor{codebackground}{rgb}{0.95,0.95,0.92}
+\definecolor{codecomment}{rgb}{0.4,0.6,0.4}
+\definecolor{codestring}{rgb}{0.58,0,0.82}
+
+% Code Style Settings
+\lstset{
+    backgroundcolor=\color{codebackground},
+    commentstyle=\color{codecomment},
+    stringstyle=\color{codestring},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    keywordstyle=\color{blue},
+    showstringspaces=false,
+    tabsize=2,
+}
+
+% Assembler Code Style
+\lstdefinelanguage{Assembler}{
+  morekeywords={
+    ld,sd,addi,sub,bnez,beq,bne,li,la,lw,sw,
+    add,sub,mul,div,rem,andi,ori,nop,jal,jr,or
+  },
+  sensitive=true,
+  morecomment=[l]{;},
+  morestring=[b]",
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Diagram Packages and Settings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,calc}
+\tikzset{node distance=2cm}
+
+% TikZ Styles
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=red!30]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=orange!30]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Header and Footer Settings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{Fhaheem Tadamarry}
+\fancyhead[C]{\rightmark}
+\fancyhead[R]{\thedatemark}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{14.5pt}
+\setlength{\footskip}{40pt}
+% Create date mark command
+\newcommand{\thedatemark}{}
+\newcommand{\datemark}[1]{\renewcommand{\thedatemark}{#1}}
+% For section marking
+\renewcommand{\sectionmark}[1]{\markright{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Custom Commands
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\hint}[1]{\textit{\color{red!85} (Hint: #1)}} % Hint command

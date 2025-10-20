@@ -1,0 +1,91 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\Large\bfseries}{}{0em}{}
+
+\title{EEL 6764 Midterm Grade Appeal: Justification for Regrade}
+\author{Fhaheem Ladamarry}
+\date{Spring 2025}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduction}
+This document provides a detailed justification for requesting a regrade of specific questions from the EEL 6764 Midterm Exam (SET B). Each section outlines where partial or full credit may have been missed, along with reasoning based entirely on what was originally written.
+
+\section*{Section I: Short Answers (Scored: 3.33/10)}
+
+\subsection*{Question 2: Data Forwarding Cannot Resolve Hazard (0 pts)}
+\textbf{Original Answer:} RAW is a data hazard that is not resolved because you can't read something that hasn't been written to (i.e., nothing there).
+
+\textbf{Argument:} This explanation correctly describes a load-use hazard scenario, where the result of a load instruction is not available soon enough to forward to the next instruction. Although not explicitly named, the concept is clearly conveyed. This demonstrates an understanding of why forwarding alone cannot resolve this type of hazard. Partial credit is warranted.
+
+\subsection*{Question 3: Write-Through Policy Usage (0.5 pts)}
+\textbf{Original Answer:} It is true... write-through writes to cache and memory... processors and memory have significantly improved...
+
+\textbf{Argument:} While I incorrectly stated that write-through is widely used today, my answer shows a rationale grounded in hardware trends. The explanation references improvements in memory speed and coherence. This indicates partial understanding and justifies additional credit.
+
+\subsection*{Question 4: Branch Prediction Accuracy (0.5 pts)}
+\textbf{Original Answer:} BP x 0.8 x 2 = 0.3 \Rightarrow BP = 0.3 / 1.6 = 0.1875
+
+\textbf{Argument:} Although I misinterpreted which variable to solve for, I applied the correct formula structure. This shows method-level understanding even if the final result was incorrect. Partial credit should be considered.
+
+\subsection*{Question 5: Scheme That Fetches More Than One Block (0 pts)}
+\textbf{Original Answer:} 75
+
+\textbf{Argument:} The answer appears to be a miswriting or scanning error, likely intending to reference "prefetching" or "hardware prefetch." Based on the structure of other answers, this seems to be a formatting or transcription mistake. Partial credit is reasonable.
+
+\subsection*{Question 6: Way-Predicting Cache Attributes (0.5 pts)}
+\textbf{Original Answer:} Bandwidth: better, Power: better, Cost: low
+
+\textbf{Argument:} I correctly identified that power consumption improves with way prediction. While I misjudged the bandwidth and cost aspects, understanding part of the trade-off shows partial knowledge deserving of more credit.
+
+\subsection*{Question 7: Voltage and Frequency Scaling (0 pts)}
+\textbf{Original Answer:} Used 0.15 for both voltage and frequency, calculated power = Load x 0.15$^2$ x 0.15
+
+\textbf{Argument:} The structure and formula for dynamic power were correct (P \propto V$^2$ \cdot f), but I mistakenly treated a 15\% reduction as 15\% of the original value rather than 85\%. This is a numerical misinterpretation of phrasing, not a conceptual error. Method points should be awarded.
+
+\subsection*{Question 8: Higher Associativity Reduces Miss Rate (Possibly Not Counted)}
+\textbf{Original Answer:} Explained that higher associativity brings in more virtual addresses and reduces miss rate.
+
+\textbf{Argument:} My reasoning supports the correct answer (True). If points were not granted, this explanation demonstrates clear understanding and deserves full credit.
+
+\section*{Section II: Multiple Choice (Scored: 2/10)}
+
+\begin{itemize}[leftmargin=1.5em]
+  \item[\textbf{Q1}] Identified that voltage scaling improves power. Missed "energy" but avoided "performance." \textbf{Partial credit suggested.}
+  \item[\textbf{Q7}] Circled both an incorrect and correct answer. Selected "370" and "None of the Above." Despite including a wrong answer, identifying the correct one warrants \textbf{0.5--1 point}.
+  \item[\textbf{Q8}] Correctly selected goals to reduce L1 miss rate and L2 miss penalty. \textbf{Partial credit warranted.}
+  \item[\textbf{Q9}] Correctly chose 2-bit and correlating schemes; missed "Static." Shows partial understanding. \textbf{Partial credit suggested.}
+\end{itemize}
+
+\section*{Section III: Memory Hierarchy (Estimated: 3--4 pts)}
+\textbf{Definitions:} I answered all four cache optimization techniques with reasonable explanations.
+\textbf{Timing Problem:} I showed work and attempted the cycle-based breakdown. Even if the math had minor errors, the structure and understanding of "critical word first" versus "no optimization" should earn \textbf{partial method credit.}
+
+\section*{Section IV: Pipeline Performance (Scored: 7/10)}
+Each subpart was addressed:
+\begin{itemize}[leftmargin=1.5em]
+  \item Described all four ISA types clearly.
+  \item Correctly computed pipelined clock cycle time.
+  \item Applied stall and CPI calculations.
+  \item Used Amdahl's Law for theoretical speedup.
+\end{itemize}
+If any numeric answers were off, the use of correct formulas and logic shows strong understanding. \textbf{1--2 additional points possible}.
+
+\section*{Section V: Branch Prediction + RISC-V (Scored: 6.5/10)}
+\begin{itemize}[leftmargin=1.5em]
+  \item Provided 2-bit FSM diagram. Even with slight error, core concept was correct. \textbf{Partial credit if not fully awarded.}
+  \item Listed valid RISC-V design principles.
+  \item Provided correct register counts and formats.
+\end{itemize}
+I request reevaluation for any parts marked down due to formatting or scanning artifacts.
+
+\section*{Conclusion}
+This appeal is made in good faith with respect for the grading process. I believe the outlined justifications show sufficient understanding and merit reconsideration for partial or full credit where appropriate. Thank you for your time and consideration.
+
+\end{document}
+
