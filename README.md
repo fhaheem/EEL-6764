@@ -14,16 +14,17 @@ LaTeX homework sources and project files for **Graduate Computer Architecture (E
 
 ---
 ## 📁 Repository Structure
-├── homeworks/                   ← Additional homework or supporting files
-├── hw3_images/                  ← Figures and diagrams for Homework 3
-├── homework1.tex                ← Homework 1 source (pipeline & CPI analysis)
-├── homework2.tex                ← Homework 2 source (hazards, forwarding, stalls)
-├── homework3.tex                ← Homework 3 source (Tomasulo & dynamic scheduling)
-├── homework4.tex                ← Homework 4 source (cache/memory hierarchy)
-├── main.tex                     ← Master document compiling all homeworks
-├── preamble.tex                 ← Shared LaTeX macros, packages and styles
-├── .gitignore                   ← Rules for ignoring build/system files
-└── README.md                    ← Project documentation (this file)
+EEL-6764/
+├── homeworks/          # Additional homework or supporting files
+├── hw3_images/         # Figures and diagrams for Homework 3
+├── homework1.tex       # Homework 1: Performance & fabrication cost analysis
+├── homework2.tex       # Homework 2: Cache optimization techniques
+├── homework3.tex       # Homework 3: Data hazards, pipelining, dynamic scheduling
+├── homework4.tex       # Homework 4: Vector processors and cache coherence
+├── main.tex            # Master document compiling all homeworks
+├── preamble.tex        # LaTeX preamble with packages and styling
+├── .gitignore          # Git ignore file for LaTeX build artifacts
+└── README.md           # Project documentation (this file)
 
 
 
